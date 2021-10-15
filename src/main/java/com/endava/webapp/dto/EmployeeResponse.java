@@ -6,21 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class EmployeeDTO {
+public class EmployeeResponse {
     private int employeeId;
     private String firstName;
     private String lastName;
+    private int departmentId;
     private String email;
     private String phoneNumber;
-    private Date hireDate;
     private BigDecimal salary;
-    private BigDecimal commissionPct;
-    private int managerId;
-    private int departmentId;
 }
