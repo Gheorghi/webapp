@@ -15,6 +15,6 @@ public class UniqueEmailValidator
     @Override
     public boolean isValid(
             final EmployeeRequest employeeRequest, final ConstraintValidatorContext constraintValidatorContext) {
-        return employeeRepository.isInColumn("EMAIL", employeeRequest.getEmail());
+        return employeeRepository.isEmailUnique(employeeRequest.getEmail());
     }
 }
