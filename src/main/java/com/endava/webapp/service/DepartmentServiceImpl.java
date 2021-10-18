@@ -3,7 +3,7 @@ package com.endava.webapp.service;
 import com.endava.webapp.dto.DepartmentRequest;
 import com.endava.webapp.dto.DepartmentResponse;
 import com.endava.webapp.model.Department;
-import com.endava.webapp.repository.DepartmentRepositoryImpl;
+import com.endava.webapp.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private final DepartmentRepositoryImpl departmentRepository;
+    private final DepartmentRepository departmentRepository;
 
     @Override
     public List<DepartmentResponse> getAllDepartments() {
@@ -30,13 +30,17 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public DepartmentResponse addDepartment(final DepartmentRequest department) {
-        return mapToResponse(departmentRepository.addDepartment(mapRequestToEmployee(department)));
+    public DepartmentResponse addDepartment(final DepartmentRequest departmentRequest) {
+        val department = mapRequestToDepartment(departmentRequest);
+        val savedDepartment = departmentRepository.addDepartment(department);
+        return mapToResponse(savedDepartment);
     }
 
     @Override
-    public DepartmentResponse updateDepartment(final DepartmentRequest department, final int id) {
-        return mapToResponse(departmentRepository.updateDepartment(mapRequestToEmployee(department), id));
+    public DepartmentResponse updateDepartment(final DepartmentRequest departmentRequest, final int id) {
+        val department = mapRequestToDepartment(departmentRequest);
+        val savedDepartment = departmentRepository.updateDepartment(department, id);
+        return mapToResponse(savedDepartment);
     }
 
     @Override
@@ -56,11 +60,9 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .collect(Collectors.toList());
     }
 
-    private final Department mapRequestToEmployee(final DepartmentRequest departmentRequest) {
-        Department department = new Department();
-        department.setId(departmentRequest.getId());
-        department.setName(departmentRequest.getName());
-        department.setLocation(departmentRequest.getLocation());
+    private final Department mapRequestToDepartment(final DepartmentRequest departmentRequest) {
+        val department = new Department();
+        BeanUtils.copyProperties(departmentRequest, department);
         return department;
     }
 }

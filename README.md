@@ -1,5 +1,5 @@
 # Webapp
-JDBC implementation of a simple web application to perform REST CRUD.
+Hibernate implementation of a simple web application to perform REST CRUD.
 
 Steps to run this project:
 1. Install Docker Desktop

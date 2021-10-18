@@ -15,5 +15,7 @@ public interface EmployeeRepository {
 
     void deleteEmployee(int id);
 
-    boolean isInColumn(String column, String value);
+    boolean isEmailExist(String value);
+
+    boolean isPhoneExist(String value);
 }

@@ -15,6 +15,6 @@ public class UniquePhoneValidator
     @Override
     public boolean isValid(
             final EmployeeRequest employeeRequest, final ConstraintValidatorContext constraintValidatorContext) {
-        return employeeRepository.isInColumn("phone_number", employeeRequest.getPhoneNumber());
+        return employeeRepository.isPhoneExist(employeeRequest.getPhoneNumber());
     }
 }
