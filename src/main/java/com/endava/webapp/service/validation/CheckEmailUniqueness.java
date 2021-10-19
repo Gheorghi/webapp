@@ -14,5 +14,4 @@ public @interface CheckEmailUniqueness {
     String message() default "<Email is already registered>";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
-
 }

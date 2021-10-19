@@ -14,5 +14,4 @@ public @interface CheckPhoneUniqueness {
     String message() default "<Phone number is already registered>";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
-
 }
