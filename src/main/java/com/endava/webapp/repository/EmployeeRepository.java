@@ -14,6 +14,4 @@ public interface EmployeeRepository {
     List<Employee> getEmployees();
 
     void deleteEmployee(int id);
-
-    boolean isInColumn(String column, String value);
 }

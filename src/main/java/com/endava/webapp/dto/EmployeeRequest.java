@@ -32,6 +32,6 @@ public class EmployeeRequest {
     @NotBlank(message = "Employee's phone number is mandatory")
     private String phoneNumber;
 
-    @DecimalMin(value = "1.0", message = "Employee's salary should be greater than 0.99 kg of gold")
+    @DecimalMin(value = "1", message = "Employee's salary should be greater than 0.99 kg of gold")
     private BigDecimal salary;
 }

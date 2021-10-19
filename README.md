@@ -1,5 +1,5 @@
 # Webapp
-JDBC implementation of a simple web application to perform REST CRUD.
+Hibernate implementation of a simple web application to perform REST CRUD.
 
 Steps to run this project:
 1. Install Docker Desktop
@@ -21,7 +21,6 @@ Structure:
 
 Validation:
 - Empl salary column validation for min salary in DB level and API.
-- POST Empl. email & phone_number columns have validation for "uniqueness" in DB level and API.
-- PUT Empl. email & phone_number columns have validation for "uniqueness" in DB level.
+- POST/PUT Empl. email & phone_number columns have validation for "uniqueness" in DB level.
 - All columns have validation for "not null" in DB level and API.
 - All columns have validation for "not blank" at the API level.
