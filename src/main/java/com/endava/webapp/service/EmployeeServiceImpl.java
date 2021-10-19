@@ -23,33 +23,33 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse getEmployee(final int id) {
-        val employee = employeeRepository.getEmployeeById(id);
+        val employee = employeeRepository.getById(id);
         return mapToResponse(employee);
     }
 
     @Override
     public List<EmployeeResponse> getAllEmployees() {
-        return mapToResponse(employeeRepository.getEmployees());
+        return mapToResponse(employeeRepository.findAll());
     }
 
     @Override
     public EmployeeResponse addEmployee(final EmployeeRequest employeeRequest) {
         val employee = mapRequestToEmployee(employeeRequest);
-        val savedEmployee = employeeRepository.addEmployee(employee);
+        val savedEmployee = employeeRepository.save(employee);
         return mapToResponse(savedEmployee);
     }
 
     @Override
     public EmployeeResponse updateEmployee(final EmployeeRequest employeeRequest, final int id) {
-        val employee = employeeRepository.getEmployeeById(id);
+        val employee = employeeRepository.getById(id);
         checkAndUpdate(employeeRequest, employee);
-        val updatedEmployee = employeeRepository.updateEmployee(employee, id);
+        val updatedEmployee = employeeRepository.save(employee);
         return mapToResponse(updatedEmployee);
     }
 
     @Override
     public void deleteEmployee(final int id) {
-        employeeRepository.deleteEmployee(id);
+        employeeRepository.delete(employeeRepository.getById(id));
     }
 
     private EmployeeResponse mapToResponse(final Employee employee) {
@@ -87,7 +87,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private Department mapToDepartment(final EmployeeRequest employeeRequest) {
-        return departmentRepository.getDepartmentById(employeeRequest.getDepartmentId());
+        return departmentRepository.getById(employeeRequest.getDepartmentId());
     }
 
     private void checkAndUpdate(final EmployeeRequest employeeRequest, final Employee employee) {
