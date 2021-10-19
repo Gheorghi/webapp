@@ -61,13 +61,13 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .collect(Collectors.toList());
     }
 
-    private final Department mapRequestToDepartment(final DepartmentRequest departmentRequest) {
+    private Department mapRequestToDepartment(final DepartmentRequest departmentRequest) {
         val department = new Department();
         BeanUtils.copyProperties(departmentRequest, department);
         return department;
     }
 
-    private final void checkAndUpdate(final DepartmentRequest departmentRequest, final Department department) {
+    private void checkAndUpdate(final DepartmentRequest departmentRequest, final Department department) {
         if (!department.getName().equals(departmentRequest.getName())) {
             department.setName(departmentRequest.getName());
         }

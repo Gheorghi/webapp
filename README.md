@@ -21,6 +21,6 @@ Structure:
 
 Validation:
 - Empl salary column validation for min salary in DB level and API.
-- POST/PUT Empl. email & phone_number columns have validation for "uniqueness" in DB level and API.
+- POST/PUT Empl. email & phone_number columns have validation for "uniqueness" in DB level.
 - All columns have validation for "not null" in DB level and API.
 - All columns have validation for "not blank" at the API level.

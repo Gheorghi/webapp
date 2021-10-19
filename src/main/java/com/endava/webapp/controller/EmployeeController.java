@@ -3,14 +3,18 @@ package com.endava.webapp.controller;
 import com.endava.webapp.dto.EmployeeRequest;
 import com.endava.webapp.dto.EmployeeResponse;
 import com.endava.webapp.service.EmployeeService;
-import com.endava.webapp.service.validation.CheckEmailUniqueness;
-import com.endava.webapp.service.validation.CheckPhoneUniqueness;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -41,7 +45,7 @@ public class EmployeeController {
 
     @PostMapping(path = EMPLOYEES, consumes = {"application/json"})
     public ResponseEntity<EmployeeResponse> addNewEmployee(
-            @Valid @CheckEmailUniqueness @CheckPhoneUniqueness @RequestBody final EmployeeRequest employee) {
+            @Valid @RequestBody final EmployeeRequest employee) {
         return ResponseEntity.ok(employeeService.addEmployee(employee));
     }
 
@@ -58,6 +62,4 @@ public class EmployeeController {
         log.info("Deleting the employee, whose id is: " + id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

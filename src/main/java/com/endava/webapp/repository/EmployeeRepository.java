@@ -14,8 +14,4 @@ public interface EmployeeRepository {
     List<Employee> getEmployees();
 
     void deleteEmployee(int id);
-
-    boolean isEmailUnique(String email);
-
-    boolean isPhoneUnique(String phone);
 }

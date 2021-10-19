@@ -6,7 +6,6 @@ import com.endava.webapp.model.Department;
 import com.endava.webapp.model.Employee;
 import com.endava.webapp.repository.DepartmentRepository;
 import com.endava.webapp.repository.EmployeeRepository;
-import com.endava.webapp.service.validation.exceptions.UniqueConstraintException;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -63,7 +62,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    private final Employee mapRequestToEmployee(final EmployeeRequest employeeRequest) {
+    private Employee mapRequestToEmployee(final EmployeeRequest employeeRequest) {
         Employee employee = new Employee();
         employee.setEmployeeId(employeeRequest.getEmployeeId());
         employee.setFirstName(employeeRequest.getFirstName());
@@ -75,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    private final EmployeeResponse mapEmployeeToResponse(final Employee employee) {
+    private EmployeeResponse mapEmployeeToResponse(final Employee employee) {
         EmployeeResponse employeeResponse = new EmployeeResponse();
         employeeResponse.setEmployeeId(employee.getEmployeeId());
         employeeResponse.setFirstName(employee.getFirstName());
@@ -87,11 +86,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeResponse;
     }
 
-    private final Department mapToDepartment(final EmployeeRequest employeeRequest) {
+    private Department mapToDepartment(final EmployeeRequest employeeRequest) {
         return departmentRepository.getDepartmentById(employeeRequest.getDepartmentId());
     }
 
-    private final void checkAndUpdate(final EmployeeRequest employeeRequest, final Employee employee) {
+    private void checkAndUpdate(final EmployeeRequest employeeRequest, final Employee employee) {
         if (!employee.getFirstName().equals(employeeRequest.getFirstName())) {
             employee.setFirstName(employeeRequest.getFirstName());
         }
@@ -102,16 +101,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setDepartmentId(mapToDepartment(employeeRequest));
         }
         if (!employee.getEmail().equals(employeeRequest.getEmail())) {
-            if (employeeRepository.isEmailUnique(employeeRequest.getEmail())) {
-                employee.setEmail(employeeRequest.getEmail());
-            } else
-                throw new UniqueConstraintException("<Email is already registered>");
+            employee.setEmail(employeeRequest.getEmail());
         }
         if (!employee.getPhoneNumber().equals(employeeRequest.getPhoneNumber())) {
-            if (employeeRepository.isPhoneUnique(employeeRequest.getPhoneNumber())) {
-                employee.setPhoneNumber(employeeRequest.getPhoneNumber());
-            } else
-                throw new UniqueConstraintException("<Phone number is already registered>");
+            employee.setPhoneNumber(employeeRequest.getPhoneNumber());
         }
         if (!employee.getSalary().equals(employeeRequest.getSalary())) {
             employee.setSalary(employeeRequest.getSalary());
