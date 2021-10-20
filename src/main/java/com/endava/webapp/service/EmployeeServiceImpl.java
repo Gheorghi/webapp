@@ -8,7 +8,9 @@ import com.endava.webapp.repository.DepartmentRepository;
 import com.endava.webapp.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +25,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse getEmployee(final int id) {
-        val employee = employeeRepository.getById(id);
+        val employee = employeeRepository.getEmployeeById(id);
         return mapToResponse(employee);
     }
 
@@ -34,6 +36,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse addEmployee(final EmployeeRequest employeeRequest) {
+        val employees = getAllEmployees();
+        validateEmailUniqueness(employees, employeeRequest);
+        validatePhoneUniqueness(employees, employeeRequest);
         val employee = mapRequestToEmployee(employeeRequest);
         val savedEmployee = employeeRepository.save(employee);
         return mapToResponse(savedEmployee);
@@ -41,7 +46,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse updateEmployee(final EmployeeRequest employeeRequest, final int id) {
-        val employee = employeeRepository.getById(id);
+        val employees = getAllEmployees();
+        validateEmailUniqueness(employees, employeeRequest);
+        validatePhoneUniqueness(employees, employeeRequest);
+        val employee = employeeRepository.getEmployeeById(id);
         checkAndUpdate(employeeRequest, employee);
         val updatedEmployee = employeeRepository.save(employee);
         return mapToResponse(updatedEmployee);
@@ -49,7 +57,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void deleteEmployee(final int id) {
-        employeeRepository.delete(employeeRepository.getById(id));
+        val employee = employeeRepository.getEmployeeById(id);
+        employeeRepository.delete(employee);
     }
 
     private EmployeeResponse mapToResponse(final Employee employee) {
@@ -109,5 +118,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!employee.getSalary().equals(employeeRequest.getSalary())) {
             employee.setSalary(employeeRequest.getSalary());
         }
+    }
+
+    private void validateEmailUniqueness
+            (final List<EmployeeResponse> employees, final EmployeeRequest employeeRequest) {
+        employees.forEach(employee -> {
+            if (employee.getEmail().equalsIgnoreCase(employeeRequest.getEmail()))
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone already registered, use another one");
+        });
+    }
+
+    private void validatePhoneUniqueness
+            (final List<EmployeeResponse> employees, final EmployeeRequest employeeRequest) {
+        employees.forEach(employee -> {
+            if (employee.getPhoneNumber().equalsIgnoreCase(employeeRequest.getPhoneNumber()))
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone already registered, use another one");
+        });
     }
 }

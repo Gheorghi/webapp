@@ -27,8 +27,8 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    public static final String EMPLOYEES = "/employees";
-    public static final String EMPLOYEE_ID = EMPLOYEES + "/{id}";
+    public final String EMPLOYEES = "/employees";
+    public final String EMPLOYEE_ID = EMPLOYEES + "/{id}";
 
     @GetMapping(EMPLOYEES)
     public ResponseEntity<List<EmployeeResponse>> getEmployees() {

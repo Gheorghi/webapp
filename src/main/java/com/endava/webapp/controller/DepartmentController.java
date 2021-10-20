@@ -23,8 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DepartmentController {
     private final DepartmentService departmentService;
-    public static final String DEPARTMENTS = "/departments";
-    public static final String DEPARTMENT_ID = DEPARTMENTS + "/{id}";
+    private final String DEPARTMENTS = "/departments";
+    private final String DEPARTMENT_ID = DEPARTMENTS + "/{id}";
 
     @GetMapping(DEPARTMENTS)
     public ResponseEntity<List<DepartmentResponse>> getDepartments() {
