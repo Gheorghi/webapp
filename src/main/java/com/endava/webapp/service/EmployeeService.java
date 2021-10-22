@@ -13,7 +13,7 @@ public interface EmployeeService {
 
     EmployeeResponse addEmployee(EmployeeRequest employee);
 
-    EmployeeResponse updateEmployee(EmployeeRequest employee, int id);
+    EmployeeResponse updateEmployee(int id, EmployeeRequest employee);
 
     void deleteEmployee(int id);
 }

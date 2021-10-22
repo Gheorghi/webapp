@@ -21,7 +21,7 @@ import static org.springframework.core.io.ResourceLoader.CLASSPATH_URL_PREFIX;
 @SpringBootTest
 @Transactional
 @Sql(scripts = "classpath:queries/fillTables.sql")
-public abstract class FileLoader {
+public abstract class BaseIT {
 
     @Autowired
     private ResourceLoader resourceLoader;

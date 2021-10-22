@@ -5,14 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.endava.webapp.controller.EmployeeController.EMPLOYEES;
+import static com.endava.webapp.controller.EmployeeController.EMPLOYEE_ID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class EmployeeControllerTest extends FileLoader {
+public class EmployeeControllerTest extends BaseIT {
 
-    private final String EMPLOYEES = "/employees";
-    private final String EMPLOYEE_ID = EMPLOYEES + "/{id}";
     private final String EMPLOYEE_FILE_PATH = "request_samples/employee/";
 
     @Autowired

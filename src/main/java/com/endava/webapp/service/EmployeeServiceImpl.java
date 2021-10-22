@@ -6,14 +6,18 @@ import com.endava.webapp.model.Department;
 import com.endava.webapp.model.Employee;
 import com.endava.webapp.repository.DepartmentRepository;
 import com.endava.webapp.repository.EmployeeRepository;
+import com.endava.webapp.service.exceptions.UniqueConstraintException;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.ignoreCase;
 
 @Service
 @RequiredArgsConstructor
@@ -36,20 +40,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse addEmployee(final EmployeeRequest employeeRequest) {
-        val employees = getAllEmployees();
-        validateEmailUniqueness(employees, employeeRequest);
-        validatePhoneUniqueness(employees, employeeRequest);
+        validateEmailUniqueness(employeeRequest.getEmail());
+        validatePhoneUniqueness(employeeRequest.getPhoneNumber());
         val employee = mapRequestToEmployee(employeeRequest);
         val savedEmployee = employeeRepository.save(employee);
         return mapToResponse(savedEmployee);
     }
 
     @Override
-    public EmployeeResponse updateEmployee(final EmployeeRequest employeeRequest, final int id) {
-        val employees = getAllEmployees();
-        validateEmailUniqueness(employees, employeeRequest);
-        validatePhoneUniqueness(employees, employeeRequest);
+    public EmployeeResponse updateEmployee(final int id, final EmployeeRequest employeeRequest) {
         val employee = employeeRepository.getEmployeeById(id);
+        validateEmailUniqueness(employeeRequest.getEmail());
+        validatePhoneUniqueness(employeeRequest.getPhoneNumber());
         checkAndUpdate(employeeRequest, employee);
         val updatedEmployee = employeeRepository.save(employee);
         return mapToResponse(updatedEmployee);
@@ -72,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private Employee mapRequestToEmployee(final EmployeeRequest employeeRequest) {
-        Employee employee = new Employee();
+        val employee = new Employee();
         employee.setEmployeeId(employeeRequest.getEmployeeId());
         employee.setFirstName(employeeRequest.getFirstName());
         employee.setLastName(employeeRequest.getLastName());
@@ -84,7 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private EmployeeResponse mapEmployeeToResponse(final Employee employee) {
-        EmployeeResponse employeeResponse = new EmployeeResponse();
+        val employeeResponse = new EmployeeResponse();
         employeeResponse.setEmployeeId(employee.getEmployeeId());
         employeeResponse.setFirstName(employee.getFirstName());
         employeeResponse.setLastName(employee.getLastName());
@@ -120,19 +122,35 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    private void validateEmailUniqueness
-            (final List<EmployeeResponse> employees, final EmployeeRequest employeeRequest) {
-        employees.forEach(employee -> {
-            if (employee.getEmail().equalsIgnoreCase(employeeRequest.getEmail()))
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone already registered, use another one");
-        });
+    private void validateEmailUniqueness(final String email) {
+        if (existsEmail(email)) {
+            throw new UniqueConstraintException(HttpStatus.CONFLICT, "Phone already registered, use another one");
+        }
     }
 
-    private void validatePhoneUniqueness
-            (final List<EmployeeResponse> employees, final EmployeeRequest employeeRequest) {
-        employees.forEach(employee -> {
-            if (employee.getPhoneNumber().equalsIgnoreCase(employeeRequest.getPhoneNumber()))
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone already registered, use another one");
-        });
+    private void validatePhoneUniqueness(final String phoneNumber) {
+        if (existsPhoneNumber(phoneNumber)) {
+            throw new UniqueConstraintException(HttpStatus.CONFLICT, "Phone already registered, use another one");
+        }
+    }
+
+    private boolean existsEmail(final String email) {
+        var employee = new Employee();
+        employee.setEmail(email);
+        val employeeExample = Example.of(employee, getMathcer(email));
+        return employeeRepository.exists(employeeExample);
+    }
+
+    private boolean existsPhoneNumber(final String phoneNumber) {
+        var employee = new Employee();
+        employee.setPhoneNumber(phoneNumber);
+        val employeeExample = Example.of(employee, getMathcer(phoneNumber));
+        return employeeRepository.exists(employeeExample);
+    }
+
+    private ExampleMatcher getMathcer(final String target) {
+        return ExampleMatcher.matching()
+                .withIgnorePaths("employeeId")
+                .withMatcher(target, ignoreCase());
     }
 }

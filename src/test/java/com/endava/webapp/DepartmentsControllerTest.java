@@ -5,16 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.endava.webapp.controller.DepartmentController.DEPARTMENTS;
+import static com.endava.webapp.controller.DepartmentController.DEPARTMENT_ID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class DepartmentsControllerTest extends FileLoader {
+public class DepartmentsControllerTest extends BaseIT {
 
-    private final String DEPARTMENTS = "/departments";
-    private final String DEPARTMENT_ID = DEPARTMENTS + "/{id}";
     private final String DEPARTMENT_FILE_PATH = "request_samples/department/";
-
 
     @Autowired
     private MockMvc mockMvc;

@@ -22,9 +22,10 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class DepartmentController {
+
     private final DepartmentService departmentService;
-    private final String DEPARTMENTS = "/departments";
-    private final String DEPARTMENT_ID = DEPARTMENTS + "/{id}";
+    public final static String DEPARTMENTS = "/departments";
+    public final static String DEPARTMENT_ID = DEPARTMENTS + "/{id}";
 
     @GetMapping(DEPARTMENTS)
     public ResponseEntity<List<DepartmentResponse>> getDepartments() {
@@ -48,7 +49,7 @@ public class DepartmentController {
     public ResponseEntity<DepartmentResponse> updateDepartment(@Valid @RequestBody final DepartmentRequest department,
                                                                @PathVariable int id) {
         log.info("Update department details, which id is " + id);
-        return ResponseEntity.ok(departmentService.updateDepartment(department, id));
+        return ResponseEntity.ok(departmentService.updateDepartment(id, department));
     }
 
     @DeleteMapping(DEPARTMENT_ID)

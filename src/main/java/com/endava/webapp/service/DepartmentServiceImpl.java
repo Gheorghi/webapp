@@ -37,7 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public DepartmentResponse updateDepartment(final DepartmentRequest departmentRequest, final int id) {
+    public DepartmentResponse updateDepartment(final int id, final DepartmentRequest departmentRequest) {
         val department = departmentRepository.getById(id);
         checkAndUpdate(departmentRequest, department);
         val savedDepartment = departmentRepository.save(department);
