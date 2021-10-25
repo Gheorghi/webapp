@@ -26,9 +26,8 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-
-    public static final String EMPLOYEES = "/employees";
-    public static final String EMPLOYEE_ID = EMPLOYEES + "/{id}";
+    public final static String EMPLOYEES = "/employees";
+    public final static String EMPLOYEE_ID = EMPLOYEES + "/{id}";
 
     @GetMapping(EMPLOYEES)
     public ResponseEntity<List<EmployeeResponse>> getEmployees() {
@@ -53,7 +52,7 @@ public class EmployeeController {
     public ResponseEntity<EmployeeResponse> updateEmployee(
             @Valid @RequestBody final EmployeeRequest employee, @PathVariable final int id) {
         log.info("Update employee details, whose id is: " + id);
-        return ResponseEntity.ok(employeeService.updateEmployee(employee, id));
+        return ResponseEntity.ok(employeeService.updateEmployee(id, employee));
     }
 
     @DeleteMapping(EMPLOYEE_ID)

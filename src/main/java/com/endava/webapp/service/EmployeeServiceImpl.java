@@ -6,6 +6,7 @@ import com.endava.webapp.model.Department;
 import com.endava.webapp.model.Employee;
 import com.endava.webapp.repository.DepartmentRepository;
 import com.endava.webapp.repository.EmployeeRepository;
+import com.endava.webapp.service.validation.ExistenceValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final DepartmentRepository departmentRepository;
 
+    private final ExistenceValidator validateUniqueness;
+
     @Override
     public EmployeeResponse getEmployee(final int id) {
-        val employee = employeeRepository.getById(id);
+        val employee = employeeRepository.getEmployeeById(id);
         return mapToResponse(employee);
     }
 
@@ -34,14 +37,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse addEmployee(final EmployeeRequest employeeRequest) {
+        validateUniqueness.validateEmail(employeeRequest.getEmail());
+        validateUniqueness.validatePhone(employeeRequest.getPhoneNumber());
         val employee = mapRequestToEmployee(employeeRequest);
         val savedEmployee = employeeRepository.save(employee);
         return mapToResponse(savedEmployee);
     }
 
     @Override
-    public EmployeeResponse updateEmployee(final EmployeeRequest employeeRequest, final int id) {
-        val employee = employeeRepository.getById(id);
+    public EmployeeResponse updateEmployee(final int id, final EmployeeRequest employeeRequest) {
+        val employee = employeeRepository.getEmployeeById(id);
         checkAndUpdate(employeeRequest, employee);
         val updatedEmployee = employeeRepository.save(employee);
         return mapToResponse(updatedEmployee);
@@ -49,7 +54,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void deleteEmployee(final int id) {
-        employeeRepository.delete(employeeRepository.getById(id));
+        val employee = employeeRepository.getEmployeeById(id);
+        employeeRepository.delete(employee);
     }
 
     private EmployeeResponse mapToResponse(final Employee employee) {
@@ -63,7 +69,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private Employee mapRequestToEmployee(final EmployeeRequest employeeRequest) {
-        Employee employee = new Employee();
+        val employee = new Employee();
         employee.setEmployeeId(employeeRequest.getEmployeeId());
         employee.setFirstName(employeeRequest.getFirstName());
         employee.setLastName(employeeRequest.getLastName());
@@ -75,7 +81,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private EmployeeResponse mapEmployeeToResponse(final Employee employee) {
-        EmployeeResponse employeeResponse = new EmployeeResponse();
+        val employeeResponse = new EmployeeResponse();
         employeeResponse.setEmployeeId(employee.getEmployeeId());
         employeeResponse.setFirstName(employee.getFirstName());
         employeeResponse.setLastName(employee.getLastName());
@@ -97,13 +103,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!employee.getLastName().equals(employeeRequest.getLastName())) {
             employee.setLastName(employeeRequest.getLastName());
         }
-        if (!employee.getDepartmentId().equals(employeeRequest.getDepartmentId())) {
+        if (!(employee.getDepartmentId().getId() == employeeRequest.getDepartmentId())) {
             employee.setDepartmentId(mapToDepartment(employeeRequest));
         }
         if (!employee.getEmail().equals(employeeRequest.getEmail())) {
+            validateUniqueness.validateEmail(employeeRequest.getEmail());
             employee.setEmail(employeeRequest.getEmail());
         }
         if (!employee.getPhoneNumber().equals(employeeRequest.getPhoneNumber())) {
+            validateUniqueness.validatePhone(employeeRequest.getPhoneNumber());
             employee.setPhoneNumber(employeeRequest.getPhoneNumber());
         }
         if (!employee.getSalary().equals(employeeRequest.getSalary())) {

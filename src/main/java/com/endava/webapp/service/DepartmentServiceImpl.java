@@ -25,7 +25,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public DepartmentResponse getDepartment(final int id) {
-        val department = departmentRepository.getById(id);
+        val department = departmentRepository.getDepartmentById(id);
         return mapToResponse(department);
     }
 
@@ -37,7 +37,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public DepartmentResponse updateDepartment(final DepartmentRequest departmentRequest, final int id) {
+    public DepartmentResponse updateDepartment(final int id, final DepartmentRequest departmentRequest) {
         val department = departmentRepository.getById(id);
         checkAndUpdate(departmentRequest, department);
         val savedDepartment = departmentRepository.save(department);
@@ -46,7 +46,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void deleteDepartment(final int id) {
-        departmentRepository.delete(departmentRepository.getById(id));
+        val department = departmentRepository.getDepartmentById(id);
+        departmentRepository.delete(department);
     }
 
     private DepartmentResponse mapToResponse(final Department department) {

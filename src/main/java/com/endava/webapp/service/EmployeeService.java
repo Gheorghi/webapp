@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface EmployeeService {
 
-  EmployeeResponse getEmployee(final int id);
+    EmployeeResponse getEmployee(final int id);
 
-  List<EmployeeResponse> getAllEmployees();
+    List<EmployeeResponse> getAllEmployees();
 
-  EmployeeResponse addEmployee(EmployeeRequest employee);
+    EmployeeResponse addEmployee(EmployeeRequest employee);
 
-  EmployeeResponse updateEmployee(EmployeeRequest employee, int id);
+    EmployeeResponse updateEmployee(int id, EmployeeRequest employee);
 
-  void deleteEmployee(int id);
+    void deleteEmployee(int id);
 }
