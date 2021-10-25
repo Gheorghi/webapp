@@ -6,18 +6,13 @@ import com.endava.webapp.model.Department;
 import com.endava.webapp.model.Employee;
 import com.endava.webapp.repository.DepartmentRepository;
 import com.endava.webapp.repository.EmployeeRepository;
-import com.endava.webapp.service.exceptions.UniqueConstraintException;
+import com.endava.webapp.service.validation.ExistenceValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.ignoreCase;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +21,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     private final DepartmentRepository departmentRepository;
+
+    private final ExistenceValidator validateUniqueness;
 
     @Override
     public EmployeeResponse getEmployee(final int id) {
@@ -40,8 +37,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse addEmployee(final EmployeeRequest employeeRequest) {
-        validateEmailUniqueness(employeeRequest.getEmail());
-        validatePhoneUniqueness(employeeRequest.getPhoneNumber());
+        validateUniqueness.validateEmail(employeeRequest.getEmail());
+        validateUniqueness.validatePhone(employeeRequest.getPhoneNumber());
         val employee = mapRequestToEmployee(employeeRequest);
         val savedEmployee = employeeRepository.save(employee);
         return mapToResponse(savedEmployee);
@@ -50,8 +47,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeResponse updateEmployee(final int id, final EmployeeRequest employeeRequest) {
         val employee = employeeRepository.getEmployeeById(id);
-        validateEmailUniqueness(employeeRequest.getEmail());
-        validatePhoneUniqueness(employeeRequest.getPhoneNumber());
         checkAndUpdate(employeeRequest, employee);
         val updatedEmployee = employeeRepository.save(employee);
         return mapToResponse(updatedEmployee);
@@ -108,49 +103,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!employee.getLastName().equals(employeeRequest.getLastName())) {
             employee.setLastName(employeeRequest.getLastName());
         }
-        if (!employee.getDepartmentId().equals(employeeRequest.getDepartmentId())) {
+        if (!(employee.getDepartmentId().getId() == employeeRequest.getDepartmentId())) {
             employee.setDepartmentId(mapToDepartment(employeeRequest));
         }
         if (!employee.getEmail().equals(employeeRequest.getEmail())) {
+            validateUniqueness.validateEmail(employeeRequest.getEmail());
             employee.setEmail(employeeRequest.getEmail());
         }
         if (!employee.getPhoneNumber().equals(employeeRequest.getPhoneNumber())) {
+            validateUniqueness.validatePhone(employeeRequest.getPhoneNumber());
             employee.setPhoneNumber(employeeRequest.getPhoneNumber());
         }
         if (!employee.getSalary().equals(employeeRequest.getSalary())) {
             employee.setSalary(employeeRequest.getSalary());
         }
-    }
-
-    private void validateEmailUniqueness(final String email) {
-        if (existsEmail(email)) {
-            throw new UniqueConstraintException(HttpStatus.CONFLICT, "Phone already registered, use another one");
-        }
-    }
-
-    private void validatePhoneUniqueness(final String phoneNumber) {
-        if (existsPhoneNumber(phoneNumber)) {
-            throw new UniqueConstraintException(HttpStatus.CONFLICT, "Phone already registered, use another one");
-        }
-    }
-
-    private boolean existsEmail(final String email) {
-        var employee = new Employee();
-        employee.setEmail(email);
-        val employeeExample = Example.of(employee, getMathcer(email));
-        return employeeRepository.exists(employeeExample);
-    }
-
-    private boolean existsPhoneNumber(final String phoneNumber) {
-        var employee = new Employee();
-        employee.setPhoneNumber(phoneNumber);
-        val employeeExample = Example.of(employee, getMathcer(phoneNumber));
-        return employeeRepository.exists(employeeExample);
-    }
-
-    private ExampleMatcher getMathcer(final String target) {
-        return ExampleMatcher.matching()
-                .withIgnorePaths("employeeId")
-                .withMatcher(target, ignoreCase());
     }
 }

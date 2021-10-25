@@ -11,4 +11,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
         return findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Employee Not Found"));
     }
+
+    boolean existsByPhoneNumber(final String phone);
+
+    boolean existsByEmail(final String email);
 }
